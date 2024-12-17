@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1x1 Pixel Generator</title>
+</head>
+<body>
+    <input type="color" name="Pixel Color" id="color">
+    <button id="download">Download</button>
+
+    <a hidden id="downloadLink" download="pixel.png"></a>
+
+    <canvas id="canvas" width="1" height="1"></canvas>
+
+    <script defer>
+        /** @type {HTMLInputElement} */
+        const colorPicker = document.querySelector("#color");
+
+        /** @type {HTMLButtonElement} */
+        const download = document.querySelector("#download");
+
+        /** @type {HTMLLinkElement} */
+        const link = document.querySelector("#downloadLink");
+
+        /** @type {HTMLCanvasElement} */
+        const canvas = document.querySelector("#canvas");
+
+        /** @type {CanvasRenderingContext2D} */
+        const context = canvas.getContext("2d");
+
+        function updateColor() {
+            context.fillStyle = colorPicker.value;
+            context.fillRect(0, 0, canvas.width, canvas.height); 
+        }
+
+        // to tick after defer
+        queueMicrotask(() => updateColor(), 0);
+        
+        colorPicker.addEventListener("input", () => updateColor());
+
+        download.addEventListener("click", () => {
+            // https://stackoverflow.com/a/12796748/7589775
+            link.href = canvas.toDataURL('image/png')
+                .replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
+                .replace(/^data:application\/octet-stream/, 'data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=pixel.png');
+            
+            link.click();
+        })
+    </script>
+
+    <style>
+        canvas {
+            opacity: 0;
+        }
+    </style>
+</body>
+</html>
